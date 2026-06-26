@@ -1,0 +1,62 @@
+@import 'primeicons/primeicons.css';
+
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --app-bg: var(--p-surface-50);
+  --app-panel-bg: var(--p-surface-0);
+  --app-divider: var(--p-surface-200);
+
+  &.dark-mode {
+    --app-bg: var(--p-surface-950);
+    --app-panel-bg: var(--p-surface-900);
+    --app-divider: var(--p-surface-700);
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.006em;
+  background-color: var(--app-bg);
+  color: var(--p-text-color);
+}
+
+h1, h2, h3, h4 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--p-text-color);
+}
+
+.p-datatable {
+  .p-datatable-thead > tr > th {
+    background: transparent !important;
+    border-bottom: 1px solid var(--p-content-border-color) !important;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--p-text-muted-color) !important;
+    padding: 0.625rem 1rem !important;
+    white-space: nowrap;
+  }
+
+  .p-datatable-tbody > tr {
+    transition: background-color 0.15s ease;
+
+    > td {
+      padding: 0.5rem 1rem !important;
+      border-bottom: 1px solid var(--p-content-border-color) !important;
+      font-size: 0.875rem;
+    }
+
+    &:hover > td {
+      background: color-mix(in srgb, var(--p-text-color) 5%, transparent) !important;
+    }
+  }
+}

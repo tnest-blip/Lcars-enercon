@@ -1,0 +1,221 @@
+<div class="page-shell">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <span class="brand-title">LCARS</span>
+      <span class="brand-sep">|</span>
+      <span class="brand-page">Jobs</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-icon-btn" pTooltip="KPI dashboard" tooltipPosition="bottom" aria-label="KPI dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+      </button>
+      <button class="topbar-icon-btn" pTooltip="Charts" tooltipPosition="bottom" aria-label="Charts">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+        </svg>
+      </button>
+      <button class="topbar-icon-btn" pTooltip="Help" tooltipPosition="bottom" aria-label="Help">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </button>
+      <div class="topbar-sep"></div>
+      <button class="theme-toggle" [class.is-dark]="theme.isDark()" (click)="theme.toggle()"
+        [pTooltip]="theme.isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
+        tooltipPosition="bottom" aria-label="Toggle theme">
+        <span class="theme-toggle-track">
+          <svg class="theme-icon-sun" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="theme-icon-moon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <span class="theme-toggle-thumb"></span>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Breadcrumb nav -->
+  <div class="breadcrumb-row">
+    <nav class="page-breadcrumbs" aria-label="Breadcrumb">
+      <a class="page-crumb-back" (click)="goBack()" pTooltip="Back to Batch lists" tooltipPosition="bottom">‹</a>
+      <a routerLink="/" class="page-crumb page-crumb--link">Batch lists</a>
+      <span class="page-crumb-sep" aria-hidden="true">/</span>
+      <span class="page-crumb page-crumb--current" [title]="batchFolder">{{ batchLabel }}</span>
+    </nav>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <p-iconfield class="search-field">
+      <p-inputicon styleClass="pi pi-search" />
+      <input pInputText type="text" placeholder="Search by keyword" [(ngModel)]="searchKeyword" />
+    </p-iconfield>
+
+    <p-select [options]="filterOptions" [(ngModel)]="selectedFilter"
+      optionLabel="label" optionValue="value" placeholder="All Jobs" styleClass="filter-select" />
+
+    <div class="filter-spacer"></div>
+
+    <div class="page-info">
+      <span class="page-info-label">Items per page:</span>
+      <p-select [options]="pageSizeOptions" [(ngModel)]="itemsPerPage"
+        optionLabel="label" optionValue="value" styleClass="page-size-select" />
+      <span class="page-info-count">{{ pageFrom }}–{{ pageTo }} of {{ filteredJobs.length }}</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="content-area">
+    <p-table
+      [value]="pagedJobs"
+      [scrollable]="true"
+      styleClass="jobs-table"
+      [tableStyle]="{'min-width': '1200px'}"
+      sortMode="single"
+      [defaultSortOrder]="-1">
+
+      <ng-template #header>
+        <tr>
+          <th style="width:48px; padding-left:16px;">
+            <p-checkbox [ngModel]="allSelected" [binary]="true"
+              (ngModelChange)="toggleAll($event)" />
+          </th>
+          <th pSortableColumn="name">
+            Name <p-sortIcon field="name" />
+          </th>
+          <th pSortableColumn="status" style="width:100px">
+            Status <p-sortIcon field="status" />
+          </th>
+          <th pSortableColumn="priority" style="width:110px">
+            Priority <p-sortIcon field="priority" />
+          </th>
+          <th pSortableColumn="computingTime" style="width:165px">
+            Computing Time <p-sortIcon field="computingTime" />
+          </th>
+          <th pSortableColumn="simulationStart" style="width:175px">
+            Simulation Start <p-sortIcon field="simulationStart" />
+          </th>
+          <th pSortableColumn="simulationEnd" style="width:165px">
+            Simulation End <p-sortIcon field="simulationEnd" />
+          </th>
+          <th pSortableColumn="progress" style="width:130px">
+            Progress % <p-sortIcon field="progress" />
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-job>
+        <tr [class.row-selected]="job.selected">
+          <td style="padding-left:16px;">
+            <p-checkbox [ngModel]="job.selected" [binary]="true"
+              (ngModelChange)="toggleJob(job.id, $event)" />
+          </td>
+
+          <td>
+            <span class="job-name">{{ job.name }}</span>
+          </td>
+
+          <td>
+            @if (job.status === 'running') {
+              <span class="status-icon status-running" pTooltip="Running">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="5 3 19 12 5 21 5 3"/></svg>
+              </span>
+            } @else if (job.status === 'completed') {
+              <span class="status-icon status-completed" pTooltip="Completed">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            } @else {
+              <span class="status-icon status-forwarded" pTooltip="Forwarded">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="5 3 19 12 5 21 5 3"/></svg>
+              </span>
+            }
+          </td>
+
+          <td>
+            <span class="priority-badge priority-badge--{{ job.priority }}">
+              {{ job.priority | titlecase }}
+            </span>
+          </td>
+
+          <td class="muted-cell">{{ job.computingTime ?? '–' }}</td>
+          <td class="muted-cell">{{ job.simulationStart ?? '–' }}</td>
+          <td class="muted-cell">{{ job.simulationEnd ?? '–' }}</td>
+
+          <td>
+            <div class="progress-cell">
+              <div class="progress-track">
+                <div class="progress-fill"
+                  [style.width.%]="job.progress"
+                  [class.fill-running]="job.status === 'running'"
+                  [class.fill-done]="job.status === 'completed'">
+                </div>
+              </div>
+              <span class="progress-pct">{{ job.progress }}%</span>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-row">
+    <div class="pagination-spacer"></div>
+    <span class="page-indicator">{{ safePage + 1 }} / {{ totalPages }}</span>
+    <button class="page-btn" [disabled]="safePage === 0" (click)="prevPage()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="page-btn" [disabled]="safePage >= totalPages - 1" (click)="nextPage()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  <!-- Error messages panel -->
+  <div class="error-panel" [class.is-open]="errorPanelOpen()">
+    <button class="error-panel-header" (click)="toggleErrorPanel()">
+      <span class="error-panel-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Error messages
+      </span>
+      <svg class="panel-chevron" [class.is-open]="errorPanelOpen()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+
+    @if (errorPanelOpen()) {
+      <div class="error-cards">
+        @for (card of ['Batching error', '$ME-File', 'Regler.log', 'LSF Errors']; track card) {
+          <div class="error-card">
+            <div class="error-card-title">{{ card }}</div>
+            <textarea class="error-textarea" readonly></textarea>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+</div>

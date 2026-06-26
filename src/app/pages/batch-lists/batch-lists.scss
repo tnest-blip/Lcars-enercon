@@ -1,0 +1,479 @@
+$topbar-h: 56px;
+$filter-h: 54px;
+$summary-h: 76px;
+$brand-teal: #007a70;
+$accent: #11be8c;
+$danger: #ed2939;
+
+// ── Shell layout ──
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--app-bg);
+  overflow: hidden;
+}
+
+// ── Topbar ──
+.topbar {
+  height: $topbar-h;
+  min-height: $topbar-h;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: var(--app-panel-bg);
+  border-bottom: 1px solid var(--app-divider);
+  flex-shrink: 0;
+
+  &-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  background: $brand-teal;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--p-text-color);
+  letter-spacing: -0.01em;
+}
+
+.brand-sep {
+  color: var(--p-text-muted-color);
+  font-weight: 300;
+  font-size: 1.1rem;
+}
+
+.brand-page {
+  font-size: 1rem;
+  color: var(--p-text-muted-color);
+  font-weight: 400;
+}
+
+// Theme toggle — animated sun/moon switch (from Enercon demo)
+.theme-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  .theme-toggle-track {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 52px;
+    height: 26px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid var(--p-surface-700);
+    transition: background 0.35s ease, border-color 0.35s ease;
+  }
+
+  .theme-icon-sun,
+  .theme-icon-moon {
+    z-index: 1;
+    transition: color 0.35s ease, opacity 0.35s ease;
+    flex-shrink: 0;
+  }
+
+  .theme-icon-sun {
+    color: #fbbf24;
+    opacity: 0.4;
+  }
+
+  .theme-icon-moon {
+    color: #e2e8f0;
+    opacity: 1;
+  }
+
+  .theme-toggle-thumb {
+    position: absolute;
+    top: 50%;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f8fafc 0%, #cbd5e1 100%);
+    box-shadow: 0 2px 6px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.1);
+    transform: translate(0, -50%);
+    transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+                background 0.35s ease;
+  }
+
+  &.is-dark {
+    .theme-toggle-track {
+      background: linear-gradient(90deg, #0f172a 0%, #1e1b4b 100%);
+    }
+    .theme-icon-sun  { opacity: 0.4; }
+    .theme-icon-moon { opacity: 1; }
+    .theme-toggle-thumb {
+      transform: translate(26px, -50%);
+      background: radial-gradient(circle at 30% 30%, #fef3c7 0%, #fbbf24 100%);
+      box-shadow: 0 0 10px rgba(251,191,36,.5), 0 2px 6px rgba(0,0,0,.4);
+    }
+  }
+
+  &:not(.is-dark) {
+    .theme-toggle-track {
+      background: linear-gradient(90deg, #fef3c7 0%, #fde68a 100%);
+      border-color: #fbbf24;
+    }
+    .theme-icon-sun  { color: #f59e0b; opacity: 1; }
+    .theme-icon-moon { color: #94a3b8; opacity: 0.4; }
+  }
+
+  &:hover .theme-toggle-thumb {
+    box-shadow: 0 0 12px rgba(251,191,36,.7), 0 2px 6px rgba(0,0,0,.4);
+  }
+}
+
+.topbar-sep {
+  width: 1px;
+  height: 22px;
+  background: var(--app-divider);
+  margin: 0 4px;
+}
+
+// ── Topbar icon buttons ──
+.topbar-icon-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--p-text-muted-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--p-text-color) 8%, transparent);
+    border-color: var(--app-divider);
+    color: var(--p-text-color);
+  }
+  &:active { transform: scale(0.95); }
+}
+
+// ── Filter bar ──
+.filter-bar {
+  height: $filter-h;
+  min-height: $filter-h;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px;
+  background: var(--app-panel-bg);
+  border-bottom: 1px solid var(--app-divider);
+  flex-shrink: 0;
+
+  .search-field {
+    width: 240px;
+    input { width: 100%; font-size: 0.9rem; }
+  }
+
+  .filter-select { width: 170px; font-size: 0.9rem; }
+  .filter-spacer { flex: 1; }
+
+  .page-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color);
+    white-space: nowrap;
+
+    .page-size-select { width: 76px; font-size: 0.875rem; }
+  }
+}
+
+// ── Content area ──
+.content-area {
+  flex: 1;
+  overflow: auto;
+}
+
+.section-label {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--app-panel-bg);
+  border-bottom: 1px solid var(--app-divider);
+  text-align: center;
+  padding: 7px 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--p-text-muted-color);
+}
+
+// ── Table ──
+.lcars-table { font-size: 0.9375rem; }
+
+// ── Priority badges ──
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+
+  &--critical {
+    background: color-mix(in srgb, #ed2939 18%, transparent);
+    color: #ed2939;
+    border: 1px solid color-mix(in srgb, #ed2939 30%, transparent);
+  }
+
+  &--high {
+    background: color-mix(in srgb, #eab308 18%, transparent);
+    color: #eab308;
+    border: 1px solid color-mix(in srgb, #eab308 30%, transparent);
+  }
+
+  &--medium {
+    background: color-mix(in srgb, #22c55e 18%, transparent);
+    color: #22c55e;
+    border: 1px solid color-mix(in srgb, #22c55e 30%, transparent);
+  }
+
+  &--low {
+    background: color-mix(in srgb, #3b82f6 18%, transparent);
+    color: #3b82f6;
+    border: 1px solid color-mix(in srgb, #3b82f6 30%, transparent);
+  }
+}
+
+
+// Folder link
+.folder-link {
+  color: var(--p-primary-color);
+  text-decoration: none;
+  display: block;
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+// Task ID
+.task-id {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8125rem;
+  color: var(--p-text-muted-color);
+}
+
+// Jobs columns
+.jobs-col {
+  text-align: center !important;
+  width: 62px;
+  padding-left: 0.375rem !important;
+  padding-right: 0.375rem !important;
+}
+
+.col-icon { display: block; }
+
+.job-count {
+  font-size: 0.9rem;
+  &--failed { color: $danger; font-weight: 600; }
+  &--ok { color: $accent; font-weight: 600; }
+}
+
+.icon-sigma     { color: var(--p-text-muted-color); font-size: 1rem; font-weight: 700; }
+.icon-queued    { color: var(--p-text-muted-color); }
+.icon-failed    { color: $danger; }
+.icon-cancelled { color: var(--p-text-muted-color); }
+.icon-completed { color: $accent; }
+
+// Status icons
+.status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+
+  &.status-running  { color: $accent;           background: color-mix(in srgb, #{$accent} 15%, transparent); }
+  &.status-completed{ color: $brand-teal;        background: color-mix(in srgb, #{$brand-teal} 15%, transparent); }
+  &.status-failed   { color: $danger;            background: color-mix(in srgb, #{$danger} 15%, transparent); }
+  &.status-queued   { color: var(--p-text-muted-color); background: color-mix(in srgb, var(--p-text-muted-color) 12%, transparent); }
+}
+
+// ── Summary footer ──
+.summary-bar {
+  height: $summary-h;
+  min-height: $summary-h;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 20px;
+  background: var(--app-panel-bg);
+  border-top: 1px solid var(--app-divider);
+  flex-shrink: 0;
+}
+
+.summary-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--p-text-color);
+  letter-spacing: -0.01em;
+  flex-shrink: 0;
+}
+
+.summary-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--p-text-muted-color);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.summary-counts { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.summary-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: color-mix(in srgb, var(--p-surface-700) 30%, transparent);
+  border: 1px solid var(--app-divider);
+  border-radius: 4px;
+  padding: 4px 10px;
+
+  .count-icon { font-size: 0.9rem; font-weight: 700; }
+  .count-val  { font-weight: 600; font-size: 0.9rem; }
+}
+
+.summary-divider {
+  width: 1px;
+  height: 38px;
+  background: var(--app-divider);
+  flex-shrink: 0;
+}
+
+// ── Schedule dialog ──
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--app-divider);
+  gap: 16px;
+
+  &:last-child { border-bottom: none; }
+
+  &--checkbox {
+    align-items: center;
+  }
+}
+
+.form-label {
+  font-size: 0.9375rem;
+  color: var(--p-text-color);
+  font-weight: 400;
+  padding-top: 6px;
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &--checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+}
+
+.form-hint {
+  font-size: 0.8125rem;
+  color: $danger;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .pi { font-size: 0.75rem; color: $danger; }
+
+  &--link {
+    color: $danger;
+    cursor: pointer;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// Simulation time slider row
+.sim-time-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.sim-time-input {
+  width: 80px;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.sim-time-slider {
+  flex: 1;
+
+  // Override PrimeNG slider track to use brand teal
+  :host ::ng-deep & {
+    .p-slider-range { background: var(--p-primary-color); }
+    .p-slider-handle {
+      border-color: var(--p-primary-color);
+      background: var(--p-primary-color);
+    }
+  }
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

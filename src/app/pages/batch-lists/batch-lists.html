@@ -1,0 +1,346 @@
+<div class="page-shell">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <span class="brand-title">LCARS</span>
+      <span class="brand-sep">|</span>
+      <span class="brand-page">Batch lists</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-icon-btn" pTooltip="KPI dashboard" tooltipPosition="bottom" aria-label="KPI dashboard">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+      </button>
+      <button class="topbar-icon-btn" pTooltip="Charts" tooltipPosition="bottom" aria-label="Charts">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+        </svg>
+      </button>
+      <button class="topbar-icon-btn" pTooltip="Help" tooltipPosition="bottom" aria-label="Help">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </button>
+      <div class="topbar-sep"></div>
+      <p-button label="+ Batchlist" severity="secondary" size="small" (onClick)="openAddDialog()" />
+      <p-button label="Support" icon="pi pi-question-circle" severity="secondary" [outlined]="true" size="small" />
+      <div class="topbar-sep"></div>
+      <button
+        class="theme-toggle"
+        [class.is-dark]="theme.isDark()"
+        (click)="theme.toggle()"
+        [pTooltip]="theme.isDark() ? 'Switch to light theme' : 'Switch to dark theme'"
+        tooltipPosition="bottom"
+        aria-label="Toggle theme">
+        <span class="theme-toggle-track">
+          <svg class="theme-icon-sun" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="theme-icon-moon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <span class="theme-toggle-thumb"></span>
+        </span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <p-iconfield class="search-field">
+      <p-inputicon styleClass="pi pi-search" />
+      <input pInputText type="text" placeholder="Search by keyword" [(ngModel)]="searchKeyword" />
+    </p-iconfield>
+
+    <p-select [options]="taskTypeOptions" [(ngModel)]="selectedTaskType"
+      optionLabel="label" optionValue="value" placeholder="All Task Types" styleClass="filter-select" />
+
+    <p-select [options]="statusOptions" [(ngModel)]="selectedStatus"
+      optionLabel="label" optionValue="value" placeholder="Not completed" styleClass="filter-select" />
+
+    <div class="filter-spacer"></div>
+
+    <div class="page-info">
+      <span class="page-info-label">Items per page:</span>
+      <p-select [options]="pageSizeOptions" [(ngModel)]="itemsPerPage"
+        optionLabel="label" optionValue="value" styleClass="page-size-select" />
+      <span class="page-info-count">show 1 – {{ filteredBatches.length }} of {{ batches().length }}</span>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="content-area">
+    <div class="section-label">Jobs</div>
+
+    <p-table [value]="filteredBatches" [scrollable]="true"
+      styleClass="lcars-table" [tableStyle]="{'min-width': '1500px'}"
+      sortMode="single">
+
+      <ng-template #header>
+        <tr>
+          <th pSortableColumn="subPriority" style="width:110px">Sub Priority <p-sortIcon field="subPriority" /></th>
+          <th pSortableColumn="priority" style="width:120px">Priority <p-sortIcon field="priority" /></th>
+          <th pSortableColumn="folder" style="width:300px">Folder <p-sortIcon field="folder" /></th>
+          <th pSortableColumn="taskId" style="width:230px">Task ID <p-sortIcon field="taskId" /></th>
+          <th pSortableColumn="taskType" style="width:140px">Task Type <p-sortIcon field="taskType" /></th>
+          <th pSortableColumn="submissionTime" style="width:160px">Submission Time <p-sortIcon field="submissionTime" /></th>
+          <th pSortableColumn="projectNumber" style="width:140px">Project Number <p-sortIcon field="projectNumber" /></th>
+          <th class="jobs-col" pSortableColumn="jobs.total" pTooltip="Total"><span class="col-icon icon-sigma">Σ</span></th>
+          <th class="jobs-col" pSortableColumn="jobs.forwarded" pTooltip="Scheduled">
+            <svg class="col-icon icon-queued" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </th>
+          <th class="jobs-col" pSortableColumn="jobs.failed" pTooltip="Failed">
+            <svg class="col-icon icon-failed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </th>
+          <th class="jobs-col" pSortableColumn="jobs.cancelled" pTooltip="Cancelled">
+            <svg class="col-icon icon-cancelled" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          </th>
+          <th class="jobs-col" pSortableColumn="jobs.completed" pTooltip="Completed">
+            <svg class="col-icon icon-completed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </th>
+          <th pSortableColumn="programVersion" style="width:120px">Program Version <p-sortIcon field="programVersion" /></th>
+          <th pSortableColumn="user" style="width:180px">User <p-sortIcon field="user" /></th>
+          <th pSortableColumn="status" style="width:80px">Status <p-sortIcon field="status" /></th>
+        </tr>
+      </ng-template>
+
+      <ng-template #body let-batch>
+        <tr>
+          <td class="muted-cell">{{ batch.subPriority }}</td>
+
+          <!-- Priority -->
+          <td>
+            <span class="priority-badge priority-badge--{{ batch.priority }}">
+              {{ getPriorityLabel(batch.priority) }}
+            </span>
+          </td>
+
+          <!-- Folder -->
+          <td>
+            <a class="folder-link" [title]="batch.folder" (click)="openJobs(batch.id)">{{ batch.folder }}</a>
+          </td>
+
+          <!-- Task ID -->
+          <td><span class="task-id">{{ batch.taskId }}</span></td>
+
+          <!-- Task Type -->
+          <td>{{ batch.taskType }}</td>
+
+          <!-- Submission Time -->
+          <td>{{ batch.submissionTime }}</td>
+
+          <!-- Project Number -->
+          <td>{{ batch.projectNumber }}</td>
+
+          <!-- Jobs counts -->
+          <td class="jobs-col"><span class="job-count">{{ batch.jobs.forwarded + batch.jobs.failed + batch.jobs.cancelled + batch.jobs.completed || '–' }}</span></td>
+          <td class="jobs-col"><span class="job-count">{{ batch.jobs.forwarded || '–' }}</span></td>
+          <td class="jobs-col"><span class="job-count" [class.job-count--failed]="batch.jobs.failed > 0">{{ batch.jobs.failed }}</span></td>
+          <td class="jobs-col"><span class="job-count">{{ batch.jobs.cancelled }}</span></td>
+          <td class="jobs-col"><span class="job-count" [class.job-count--ok]="batch.jobs.completed > 0">{{ batch.jobs.completed }}</span></td>
+
+          <!-- Program Version -->
+          <td>{{ batch.programVersion || '–' }}</td>
+
+          <!-- User -->
+          <td>{{ batch.user }}</td>
+
+          <!-- Status -->
+          <td>
+            @if (batch.status === 'running') {
+              <span class="status-icon status-running" pTooltip="Running">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="5 3 19 12 5 21 5 3"/></svg>
+              </span>
+            } @else if (batch.status === 'completed') {
+              <span class="status-icon status-completed" pTooltip="Completed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+            } @else if (batch.status === 'failed') {
+              <span class="status-icon status-failed" pTooltip="Failed">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </span>
+            } @else if (batch.status === 'queued') {
+              <span class="status-icon status-queued" pTooltip="Queued">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </span>
+            }
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- Summary bar -->
+  <footer class="summary-bar">
+    <span class="summary-title">Summary</span>
+
+    <div class="summary-group">
+      <span class="summary-label">Batchlists</span>
+      <div class="summary-counts">
+        <span class="summary-count" pTooltip="Total"><span class="count-icon icon-sigma">Σ</span><span class="count-val">{{ batches().length }}</span></span>
+        <span class="summary-count" pTooltip="Running"><span class="count-icon icon-forward">→</span><span class="count-val">{{ summaryBatchlists.running }}</span></span>
+        <span class="summary-count" pTooltip="Completed"><span class="count-icon icon-running">↺</span><span class="count-val">{{ summaryBatchlists.completed }}</span></span>
+      </div>
+    </div>
+
+    <div class="summary-divider"></div>
+
+    <div class="summary-group">
+      <span class="summary-label">Jobs</span>
+      <div class="summary-counts">
+        <span class="summary-count" pTooltip="Total"><span class="count-icon icon-sigma">Σ</span><span class="count-val">{{ summaryJobs.total }}</span></span>
+        <span class="summary-count" pTooltip="Scheduled">
+          <svg class="count-icon icon-queued" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span class="count-val">{{ summaryJobs.forwarded }}</span>
+        </span>
+        <span class="summary-count" pTooltip="Failed">
+          <svg class="count-icon icon-failed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span class="count-val">{{ summaryJobs.failed }}</span>
+        </span>
+        <span class="summary-count" pTooltip="Cancelled">
+          <svg class="count-icon icon-cancelled" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          <span class="count-val">{{ summaryJobs.cancelled }}</span>
+        </span>
+        <span class="summary-count" pTooltip="Completed">
+          <svg class="count-icon icon-completed" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="count-val">{{ summaryJobs.completed }}</span>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Schedule Batchlist Dialog -->
+<p-dialog
+  header="Schedule a batchlist"
+  [(visible)]="showAddDialog"
+  [modal]="true"
+  [style]="{ width: '720px' }"
+  [closable]="true"
+  styleClass="schedule-dialog">
+
+  <div class="dialog-form">
+
+    <div class="form-row">
+      <label class="form-label">Directory</label>
+      <div class="form-control">
+        <textarea pTextarea [(ngModel)]="newBatch.directory"
+          placeholder="Copy/Paste directories here"
+          rows="3" style="width:100%; resize:vertical;"></textarea>
+        <span class="form-hint">
+          <i class="pi pi-info-circle"></i>
+          You can enter one or more directories separated by a comma
+        </span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Project number</label>
+      <div class="form-control">
+        <input pInputText [(ngModel)]="newBatch.projectNumber" placeholder="Select a project" style="width:100%;" />
+        <span class="form-hint form-hint--link">
+          <i class="pi pi-info-circle"></i>
+          can't see your project number?
+        </span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Priority</label>
+      <div class="form-control">
+        <p-select [options]="priorityOptions" [(ngModel)]="newBatch.priority"
+          optionLabel="label" optionValue="value" style="width:100%;" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Sub Priority</label>
+      <div class="form-control">
+        <p-select [options]="subPriorityOptions" [(ngModel)]="newBatch.subPriority"
+          optionLabel="label" optionValue="value" style="width:100%;" />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Simulation time (hours)</label>
+      <div class="form-control">
+        <div class="sim-time-row">
+          <input pInputText type="number" [(ngModel)]="newBatch.simulationTime"
+            min="1" max="72" class="sim-time-input" />
+          <p-slider [(ngModel)]="newBatch.simulationTime"
+            [min]="1" [max]="72" class="sim-time-slider" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row form-row--checkbox">
+      <label class="form-label">Simulate batchfiles directly</label>
+      <div class="form-control form-control--checkbox">
+        <p-checkbox [(ngModel)]="newBatch.simulateBatchfilesDirectly" [binary]="true" />
+        <span class="form-hint form-hint--link">
+          <i class="pi pi-info-circle"></i>
+          click here for more info...
+        </span>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label class="form-label">Load simulation process identifier</label>
+      <div class="form-control">
+        <input pInputText [(ngModel)]="newBatch.loadSimulationProcessId" placeholder="" style="width:100%;" />
+      </div>
+    </div>
+
+    <div class="form-row form-row--checkbox">
+      <label class="form-label">Use Linux Simulation</label>
+      <div class="form-control form-control--checkbox">
+        <p-checkbox [(ngModel)]="newBatch.useLinuxSimulation" [binary]="true" />
+        <span class="form-hint form-hint--link">
+          <i class="pi pi-info-circle"></i>
+          click here for more info...
+        </span>
+      </div>
+    </div>
+
+    <div class="form-row form-row--checkbox">
+      <label class="form-label">Skip calculated simulations</label>
+      <div class="form-control form-control--checkbox">
+        <p-checkbox [(ngModel)]="newBatch.skipCalculatedSimulations" [binary]="true" />
+      </div>
+    </div>
+
+    <div class="form-row form-row--checkbox">
+      <label class="form-label">Keep batch files</label>
+      <div class="form-control form-control--checkbox">
+        <p-checkbox [(ngModel)]="newBatch.keepBatchFiles" [binary]="true" />
+      </div>
+    </div>
+
+  </div>
+
+  <ng-template #footer>
+    <div class="dialog-footer">
+      <p-button label="Close" severity="secondary" [outlined]="true" (onClick)="closeAddDialog()" />
+      <p-button label="SCHEDULE Batch list" severity="secondary" (onClick)="scheduleBatchlist()" />
+    </div>
+  </ng-template>
+
+</p-dialog>
